@@ -16,7 +16,10 @@ const app = express();
 // 1. Middleware
 
 // Define which origins are allowed
-const allowedOrigins = ["http://localhost:3000"];
+const allowedOrigins = [
+  "http://localhost:5173", // Vite dev
+  "https://pay-api-ochre.vercel.app/",
+];
 
 app.use(
   cors({
