@@ -16,3 +16,5 @@ const showApiKey = async (userId: Types.ObjectId) => {
     throw new ApiError(500, message);
   }
 };
+
+export default showApiKey
