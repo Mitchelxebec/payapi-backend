@@ -36,7 +36,8 @@ const ApiKeySchema = new Schema<IApiKey>(
   { timestamps: true },
 );
 
-// 🛡️ CRITICAL: One user can only have ONE active key per service
-ApiKeySchema.index({ userId: 1, service: 1 }, { unique: true });
+// No compound unique index on { userId, service }.
+// Revoked keys are kept for audit. One active key per service is enforced
+// at the application level in findOrCreateApiKey.
 
 export const ApiKeyModel = mongoose.model<IApiKey>("ApiKey", ApiKeySchema);

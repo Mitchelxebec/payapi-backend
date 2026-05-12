@@ -6,7 +6,7 @@ import { ApiError } from "../../utils/ApiError";
 
 interface ApiKeyResult {
   keyDoc: IApiKey;
-  plainKey: string | null;
+  plainKey: string;
 }
 
 const findOrCreateApiKey = async (
@@ -14,19 +14,19 @@ const findOrCreateApiKey = async (
   service: ServiceType,
 ): Promise<ApiKeyResult> => {
   try {
-    // 1. Check for existing active key for this specific service
-    const existingKey = await ApiKeyModel.findOne({
+    // Block if an active key already exists for this service
+    const existingActiveKey = await ApiKeyModel.findOne({
       userId,
       service,
       status: "active",
     });
 
-    // 2. Handle Scenario 1: Key exists
-    if (existingKey) {
-      return { keyDoc: existingKey, plainKey: null };
+    if (existingActiveKey) {
+      throw new ApiError(409, "You already have an active key for this service.");
     }
 
-    // 3. Handle Scenario 2: Create new key
+    // No active key — user either never had one or revoked it.
+    // Always create a fresh document (unique index on { userId, service } has been dropped).
     const plainKey = generateApiKey();
     const hashedKey = hashApiKey(plainKey);
 
@@ -39,13 +39,7 @@ const findOrCreateApiKey = async (
 
     return { keyDoc: newKey, plainKey };
   } catch (error: unknown) {
-    // Check for MongoDB Duplicate Key Error (11000)
-    if (error instanceof Error && (error as any).code === 11000) {
-      throw new ApiError(
-        409,
-        "You already have an active key for this service.",
-      );
-    }
+    if (error instanceof ApiError) throw error;
 
     const message =
       error instanceof Error ? error.message : "Internal Server Error";
