@@ -12,6 +12,8 @@ const getServiceInfo = (req: Request, res: Response, next: NextFunction) => {
       priceInXLM: (SERVICE_PRICES[name] / STROOPS_PER_XLM).toFixed(7),
     })),
   });
+
+  next();
 };
 
 export default getServiceInfo;
