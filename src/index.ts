@@ -17,8 +17,9 @@ const app = express();
 
 // Define which origins are allowed
 const allowedOrigins = [
-  "http://localhost:5173", // Vite dev
-  "https://pay-api-ochre.vercel.app/",
+  "http://localhost:5173",
+  "https://pay-api-ochre.vercel.app",
+  "https://www.pay-api-ochre.vercel.app",
 ];
 
 app.use(
